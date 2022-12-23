@@ -11,3 +11,8 @@ name=guanze
 GET http://127.0.0.1:8880/test/list
 
 ###
+
+GET http://127.0.0.1:8880/demo/list
+
+###
+
