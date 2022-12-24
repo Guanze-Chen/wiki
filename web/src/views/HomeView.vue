@@ -103,7 +103,7 @@ export default defineComponent({
       onChange: (page: number) => {
         console.log(page);
       },
-      pageSize: 3,
+      pageSize: 5,
     };
     const actions: Record<string, string>[] = [
       { type: 'StarOutlined', text: '156' },
@@ -133,3 +133,14 @@ export default defineComponent({
   }
 });
 </script>
+
+<style scoped>
+  .ant-avatar {
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    border-radius: 8%;
+    margin: 5px 0;
+  }
+
+</style>
