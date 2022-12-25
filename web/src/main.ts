@@ -6,3 +6,5 @@ import Antd from 'ant-design-vue'
 import 'ant-design-vue/dist/antd.css'
 
 createApp(App).use(store).use(router).use(Antd).mount('#app')
+
+console.log('running in ', process.env.NODE_ENV)
