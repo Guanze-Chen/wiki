@@ -1,11 +1,13 @@
 package com.guanze.wiki.service;
 
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.guanze.wiki.domain.Ebook;
 import com.guanze.wiki.domain.EbookExample;
 import com.guanze.wiki.mapper.EbookMapper;
 import com.guanze.wiki.req.EbookReq;
 import com.guanze.wiki.resp.EbookResp;
+import com.guanze.wiki.resp.PageResp;
 import com.guanze.wiki.utils.CopyUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -20,14 +22,16 @@ public class EbookService {
     @Resource
     private EbookMapper ebookMapper;
 
-    public List<EbookResp> list(EbookReq req) {
+    public PageResp<EbookResp> list(EbookReq req) {
         EbookExample ebookExample = new EbookExample();
         EbookExample.Criteria criteria = ebookExample.createCriteria();
         if (!ObjectUtils.isEmpty(req.getName())) {
             criteria.andNameLike("%" + req.getName() + "%");
         }
-        PageHelper.startPage(1, 3);
+        PageHelper.startPage(req.getPage(), req.getSize());
         List<Ebook> ebookList = ebookMapper.selectByExample(ebookExample);
+
+        PageInfo<Ebook> pageInfo = new PageInfo<>(ebookList);
 
         List<EbookResp> respList = new ArrayList<>();
         for(Ebook ebook: ebookList){
@@ -36,6 +40,10 @@ public class EbookService {
             EbookResp ebookResp = CopyUtil.copy(ebook, EbookResp.class);;
             respList.add(ebookResp);
         }
-        return respList;
+
+        PageResp<EbookResp> pageResp = new PageResp();
+        pageResp.setTotal(pageInfo.getTotal());
+        pageResp.setList(respList);
+        return pageResp;
     }
 }

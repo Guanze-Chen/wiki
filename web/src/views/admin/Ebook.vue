@@ -115,7 +115,7 @@ export default defineComponent({
           .then((res) => {
             loading.value = false;
             const data = res.data;
-            ebooks.value = data.content;
+            ebooks.value = data.content.list;
             pagination.value.current = params.page;
           })
     };
