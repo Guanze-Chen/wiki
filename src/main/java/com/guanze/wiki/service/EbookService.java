@@ -1,5 +1,6 @@
 package com.guanze.wiki.service;
 
+import com.github.pagehelper.PageHelper;
 import com.guanze.wiki.domain.Ebook;
 import com.guanze.wiki.domain.EbookExample;
 import com.guanze.wiki.mapper.EbookMapper;
@@ -25,7 +26,7 @@ public class EbookService {
         if (!ObjectUtils.isEmpty(req.getName())) {
             criteria.andNameLike("%" + req.getName() + "%");
         }
-
+        PageHelper.startPage(1, 3);
         List<Ebook> ebookList = ebookMapper.selectByExample(ebookExample);
 
         List<EbookResp> respList = new ArrayList<>();
