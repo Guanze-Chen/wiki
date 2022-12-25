@@ -98,7 +98,6 @@ export default defineComponent({
     MessageOutlined,
   },
   setup() {
-    console.log("setup");
     const pagination = {
       onChange: (page: number) => {
         console.log(page);
