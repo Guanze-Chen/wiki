@@ -48,7 +48,7 @@
     <a-layout-content
         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
-      <a-list item-layout="vertical" size="large" :pagination="pagination" :grid="{gutter: 20, column: 3}" :data-source="ebooks1">
+      <a-list item-layout="vertical" size="large" :pagination="pagination" :grid="{gutter: 20, column: 3}" :data-source="ebooks">
         <template #renderItem="{ item }">
           <a-list-item key="item.name">
             <template #actions>
@@ -76,19 +76,7 @@ import { defineComponent, onMounted, ref, reactive, toRef } from 'vue';
 import { StarOutlined, LikeOutlined, MessageOutlined } from '@ant-design/icons-vue';
 import axios from 'axios';
 
-const listData: any = [];
 
-for (let i = 0; i < 23; i++) {
-  listData.push({
-    href: 'https://www.antdv.com/',
-    title: `ant design vue part ${i}`,
-    avatar: 'https://joeschmoe.io/api/v1/random',
-    description:
-        'Ant Design, a design language for background applications, is refined by Ant UED Team.',
-    content:
-        'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
-  });
-}
 
 export default defineComponent({
   name: 'HomeView',
@@ -98,35 +86,36 @@ export default defineComponent({
     MessageOutlined,
   },
   setup() {
-    const pagination = {
-      onChange: (page: number) => {
-        console.log(page);
-      },
-      pageSize: 5,
-    };
+
     const actions: Record<string, string>[] = [
       { type: 'StarOutlined', text: '156' },
       { type: 'LikeOutlined', text: '156' },
       { type: 'MessageOutlined', text: '2' },
     ];
-    const ebooks1 = ref("")
-    const ebooks = reactive({books:[]})
+    const ebooks = ref("")
+    const pagination = ref({
+      current:1,
+      pageSize:5,
+      total:0
+    });
     onMounted(() => {
-      axios.get("/ebook/list?name=教程")
+      axios.get("/ebook/list", {
+        params: {
+          page: 1,
+          size: 1000
+        }
+      })
           .then((res) => {
             const data = res.data;
-            ebooks1.value = data.content;
-            ebooks.books = data.content;
+            ebooks.value = data.content.list;
           })
 
     })
 
     return {
-      ebooks1,
-      books: toRef(ebooks, "books"),
+      ebooks,
       actions,
       pagination,
-      listData,
     }
 
   }
