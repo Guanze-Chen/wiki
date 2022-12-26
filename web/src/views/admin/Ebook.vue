@@ -66,6 +66,10 @@
             </a-space>
           </template>
 
+          <template v-else-if="column.key === 'category'" >
+              <span>{{getCategoryName(record.category1Id)}} / {{getCategoryName(record.category2Id)}}</span>
+          </template>
+
         </template>
 
 
@@ -155,14 +159,8 @@ export default defineComponent({
         key: 'name'
       },
       {
-        title:'分类1',
-        dataIndex:'category1Id',
-        key: 'category1'
-      },
-      {
-        title:'分类2',
-        dataIndex:'category2Id',
-        key: 'category2'
+        title:'分类',
+        key: 'category'
       },
       {
         title:'文档数',
@@ -221,7 +219,7 @@ export default defineComponent({
     const modalVisible = ref(false);
     const modalLoading = ref(false);
     const level1 = ref();
-
+    let categorys:any;
     const ebook = ref();
 
     const edit = (record: any) => {
@@ -280,7 +278,7 @@ export default defineComponent({
             loading.value = false;
             const data = res.data;
             if (data.success) {
-              const categorys = data.content;
+              categorys = data.content;
               level1.value = [];
               level1.value = Tool.array2Tree(categorys, 0);
             } else {
@@ -288,6 +286,18 @@ export default defineComponent({
             }
           })
     };
+
+    const getCategoryName = (cid:number) => {
+      let result = "";
+      console.log('----传入id-----')
+      console.log(cid)
+      categorys.forEach((item:any) => {
+        if (item.id === cid) {
+          result = item.name;
+        }
+      })
+      return result;
+    }
 
 
 
@@ -317,6 +327,7 @@ export default defineComponent({
 
       categoryIds,
       level1,
+      getCategoryName
 
     }
 
