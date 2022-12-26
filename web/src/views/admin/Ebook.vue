@@ -6,6 +6,9 @@
       <div>
         电子书管理
       </div>
+      <a-button type="primary" size="large" @click="add">
+        新增
+      </a-button>
       <a-table
       :columns="columns"
       :data-source="ebooks"
@@ -22,10 +25,18 @@
               <a-button type="primary" @click="edit(record)">
                 编辑
               </a-button>
-              &nbsp;
-              <a-button type="danger">
-                删除
-              </a-button>
+
+              <a-popconfirm
+                  title="Are you sure delete this record?"
+                  ok-text="Yes"
+                  cancel-text="No"
+                  @confirm="handleDelete(record.id)"
+              >
+                <a-button type="danger" >
+                  删除
+                </a-button>
+              </a-popconfirm>
+
             </a-space>
           </template>
 
@@ -87,6 +98,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue';
 import { StarOutlined, LikeOutlined, MessageOutlined } from '@ant-design/icons-vue';
+import { message } from "ant-design-vue";
 import axios from 'axios';
 
 
@@ -164,9 +176,13 @@ export default defineComponent({
           .then((res) => {
             loading.value = false;
             const data = res.data;
-            ebooks.value = data.content.list;
-            pagination.value.current = params.page;
-            pagination.value.total = data.content.total;
+            if (data.success) {
+              ebooks.value = data.content.list;
+              pagination.value.current = params.page;
+              pagination.value.total = data.content.total;
+            } else {
+              message.error(data.message);
+            }
           })
     };
 
@@ -180,16 +196,32 @@ export default defineComponent({
     const modalVisible = ref(false);
     const modalLoading = ref(false);
 
-    const showModal = () => {
-      modalVisible.value = true;
-    }
-
     const ebook = ref({});
 
     const edit = (record: any) => {
       modalVisible.value = true;
       ebook.value = record;
     }
+
+    const add = () => {
+      modalVisible.value = true;
+      ebook.value = {};
+    }
+
+    const handleDelete = (id: number) => {
+      axios.delete("/ebook/delete/" + id)
+          .then((res) => {
+            const data = res.data;
+            if (data.success) {
+              // 重新加载列表
+              handleQuery({
+                page: pagination.value.current,
+                size: pagination.value.pageSize
+              })
+            }
+          })
+    }
+
     const handleOk = () => {
       modalLoading.value = true;
       axios.post("/ebook/save", ebook.value)
@@ -228,6 +260,8 @@ export default defineComponent({
       modalVisible,
       modalLoading,
       edit,
+      add,
+      handleDelete,
       ebook
 
     }

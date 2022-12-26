@@ -10,6 +10,7 @@ import com.guanze.wiki.req.EbookSaveReq;
 import com.guanze.wiki.resp.EbookQueryResp;
 import com.guanze.wiki.resp.PageResp;
 import com.guanze.wiki.utils.CopyUtil;
+import com.guanze.wiki.utils.SnowFlake;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -22,6 +23,9 @@ public class EbookService {
 
     @Resource
     private EbookMapper ebookMapper;
+
+    @Resource
+    private SnowFlake snowFlake;
 
     public PageResp<EbookQueryResp> list(EbookQueryReq req) {
         EbookExample ebookExample = new EbookExample();
@@ -51,12 +55,18 @@ public class EbookService {
     public void save(EbookSaveReq req) {
         Ebook ebook =CopyUtil.copy(req, Ebook.class);
         if (ObjectUtils.isEmpty(req.getId())) {
-            //新增
+            //
+            ebook.setId(snowFlake.nextId());
             ebookMapper.insert(ebook);
         } else {
             // 更新
             ebookMapper.updateByPrimaryKey(ebook);
         }
 
+    }
+
+
+    public void delete(Long id) {
+        ebookMapper.deleteByPrimaryKey(id);
     }
 }
