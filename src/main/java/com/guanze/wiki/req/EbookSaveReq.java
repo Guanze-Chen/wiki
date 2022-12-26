@@ -1,6 +1,6 @@
-package com.guanze.wiki.resp;
+package com.guanze.wiki.req;
 
-public class EbookResp {
+public class EbookSaveReq {
     private Long id;
 
     private String name;

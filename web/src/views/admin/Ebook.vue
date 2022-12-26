@@ -184,22 +184,30 @@ export default defineComponent({
       modalVisible.value = true;
     }
 
-    const handleOk = () => {
-      modalLoading.value = true;
-      setTimeout(() => {
-        modalVisible.value = false;
-        modalLoading.value = false;
-      }, 2000)
-    }
-
     const ebook = ref({});
 
     const edit = (record: any) => {
       modalVisible.value = true;
       ebook.value = record;
     }
+    const handleOk = () => {
+      modalLoading.value = true;
+      axios.post("/ebook/save", ebook.value)
+          .then((res) => {
+            const data = res.data;
+            if (data.success) {
+              modalVisible.value = false;
+              modalLoading.value = false;
+              // 重新加载列表
+              handleQuery({
+                page: pagination.value.current,
+                size: pagination.value.pageSize
+              })
+            }
 
 
+          })
+    }
 
 
 
