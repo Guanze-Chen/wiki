@@ -34,7 +34,7 @@
 
       <a-table
           :columns="columns"
-          :data-source="categorys"
+          :data-source="level1"
           :pagination=false
       >
         <template #bodyCell="{column, record}">
@@ -146,8 +146,20 @@ export default defineComponent({
         key: 'Action'
       },
 
-
     ]
+
+    /**
+     * 一级分类树，children属性就是二级分类
+     * [{
+     *   id: "",
+     *   name: "",
+     *   children: [{
+     *     id: "",
+     *     name: "",
+     *   }]
+     * }]
+     */
+    const level1 = ref(); // 一级分类树，children属性就是二级分类
 
     const handleQuery = () => {
       loading.value = true;
@@ -158,6 +170,9 @@ export default defineComponent({
             const data = res.data;
             if (data.success) {
               categorys.value = data.content;
+
+              level1.value = [];
+              level1.value = Tool.array2Tree(categorys.value, 0);
             } else {
               message.error(data.message);
             }
@@ -167,6 +182,8 @@ export default defineComponent({
 
     const modalVisible = ref(false);
     const modalLoading = ref(false);
+
+
 
     const category = ref({});
 
@@ -216,7 +233,8 @@ export default defineComponent({
     })
 
     return {
-      categorys,
+      //categorys,
+      level1,
       columns,
       loading,
       handleOk,
