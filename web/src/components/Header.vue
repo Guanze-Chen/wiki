@@ -14,6 +14,9 @@
         <router-link to="/ebook">电子书管理</router-link>
       </a-menu-item>
       <a-menu-item key="3">
+        <router-link to="/category">分类管理</router-link>
+      </a-menu-item>
+      <a-menu-item key="4">
         <router-link to="/about">关于本站</router-link>
       </a-menu-item>
     </a-menu>
