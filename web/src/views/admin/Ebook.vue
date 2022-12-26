@@ -4,36 +4,36 @@
         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
       <div>
-        电子书管理
-      </div>
-      <a-form
-          layout="inline"
-      >
-        <a-form-item
+        <a-form
+            layout="inline"
         >
-          <a-input v-model:value="param.name" placeholder="输入名称">
-            <template #prefix>
-              <search-outlined class="site-form-item-icon" />
-            </template>
-          </a-input>
-        </a-form-item>
+          <a-form-item
+          >
+            <a-input v-model:value="param.name" placeholder="输入名称">
+              <template #prefix>
+                <search-outlined class="site-form-item-icon" />
+              </template>
+            </a-input>
+          </a-form-item>
 
-        <a-form-item>
-          <a-button type="primary" @click="handleQuery({
+          <a-form-item>
+            <a-button type="primary" @click="handleQuery({
           page:1,
           size:pagination.pageSize
           })">
-            查询
-          </a-button>
-        </a-form-item>
+              查询
+            </a-button>
+          </a-form-item>
 
-        <a-form-item>
-          <a-button type="primary" @click="add">
-            新增
-          </a-button>
-        </a-form-item>
+          <a-form-item>
+            <a-button type="primary" @click="add">
+              新增
+            </a-button>
+          </a-form-item>
 
-      </a-form>
+        </a-form>
+      </div>
+
 
       <a-table
       :columns="columns"
@@ -126,6 +126,7 @@ import { defineComponent, onMounted, ref } from 'vue';
 import { SearchOutlined } from '@ant-design/icons-vue';
 import { message } from "ant-design-vue";
 import axios from 'axios';
+import {Tool} from "@/utils/tool";
 
 
 
@@ -228,7 +229,7 @@ export default defineComponent({
 
     const edit = (record: any) => {
       modalVisible.value = true;
-      ebook.value = record;
+      ebook.value = Tool.copy(record);
     }
 
     const add = () => {
