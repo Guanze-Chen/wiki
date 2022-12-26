@@ -111,16 +111,34 @@ export default defineComponent({
           })
     };
 
+    const handleQueryEbook = () => {
+      axios.get("/ebook/list", {
+        params: {
+          page: 1,
+          size: 1000,
+          categoryId2: categoryId2,
+        }
+      })
+          .then((res) => {
+            const data = res.data;
+            ebooks.value = data.content.list;
+          })
+    }
+
     const isShowWelcome = ref(true);
+    let categoryId2 = 0;
 
     const handleClick = (value: any) => {
       console.log("Menu Click")
       if (value.key === 'welcome') {
         isShowWelcome.value = true;
       } else {
+        categoryId2 = value.key;
         isShowWelcome.value = false;
+        handleQueryEbook();
       }
     }
+
 
     onMounted(() => {
       handleQueryCategory();
