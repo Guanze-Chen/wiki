@@ -6,9 +6,35 @@
       <div>
         电子书管理
       </div>
-      <a-button type="primary" size="large" @click="add">
-        新增
-      </a-button>
+      <a-form
+          layout="inline"
+      >
+        <a-form-item
+        >
+          <a-input v-model:value="param.name" placeholder="输入名称">
+            <template #prefix>
+              <search-outlined class="site-form-item-icon" />
+            </template>
+          </a-input>
+        </a-form-item>
+
+        <a-form-item>
+          <a-button type="primary" @click="handleQuery({
+          page:1,
+          size:pagination.pageSize
+          })">
+            查询
+          </a-button>
+        </a-form-item>
+
+        <a-form-item>
+          <a-button type="primary" @click="add">
+            新增
+          </a-button>
+        </a-form-item>
+
+      </a-form>
+
       <a-table
       :columns="columns"
       :data-source="ebooks"
@@ -97,7 +123,7 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue';
-import { StarOutlined, LikeOutlined, MessageOutlined } from '@ant-design/icons-vue';
+import { SearchOutlined } from '@ant-design/icons-vue';
 import { message } from "ant-design-vue";
 import axios from 'axios';
 
@@ -108,14 +134,12 @@ import axios from 'axios';
 export default defineComponent({
   name: 'Ebook',
   components: {
-    StarOutlined,
-    LikeOutlined,
-    MessageOutlined,
+    SearchOutlined,
   },
   setup() {
     const ebooks = ref();
-    const params = ref();
-    params.value = {};
+    const param = ref();
+    param.value = {};
     const pagination = ref({
       current:1,
       pageSize:2,
@@ -171,7 +195,11 @@ export default defineComponent({
     const handleQuery = (params: any) => {
       loading.value = true;
       axios.get('/ebook/list', {
-          params: params
+          params: {
+            page: params.page,
+            size: params.size,
+            name: param.value.name,
+          }
           })
           .then((res) => {
             loading.value = false;
@@ -264,7 +292,9 @@ export default defineComponent({
       edit,
       add,
       handleDelete,
-      ebook
+      ebook,
+      handleQuery,
+      param,
 
     }
 
