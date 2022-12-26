@@ -64,7 +64,6 @@
 
         </template>
 
-
       </a-table>
     </a-layout-content>
   </a-layout>
@@ -83,6 +82,17 @@
           label="一级分类"
       >
         <a-input v-model:value="category.parent" />
+        <a-select
+            ref="select"
+            v-model:value="category.parent"
+        >
+          <a-select-option value="0">无</a-select-option>
+          <a-select-option v-for="c in level1" :key="c.id" :value="c.id" :disabled="category.id === c.id">
+              {{c.name}}
+          </a-select-option>
+
+        </a-select>
+
       </a-form-item>
 
       <a-form-item
