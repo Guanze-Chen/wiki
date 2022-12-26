@@ -94,6 +94,18 @@ export default defineComponent({
               categorys = data.content;
               level1.value = [];
               level1.value = Tool.array2Tree(categorys, 0);
+
+              // 加载目录完成后再去加载电子书
+              axios.get("/ebook/list", {
+                params: {
+                  page: 1,
+                  size: 1000
+                }
+              })
+                  .then((res) => {
+                    const data = res.data;
+                    ebooks.value = data.content.list;
+                  })
             } else {
               message.error(data.message);
             }
@@ -106,16 +118,6 @@ export default defineComponent({
 
     onMounted(() => {
       handleQueryCategory();
-      axios.get("/ebook/list", {
-        params: {
-          page: 1,
-          size: 1000
-        }
-      })
-          .then((res) => {
-            const data = res.data;
-            ebooks.value = data.content.list;
-          })
 
     })
 
