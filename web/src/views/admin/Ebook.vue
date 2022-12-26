@@ -58,6 +58,8 @@ export default defineComponent({
   },
   setup() {
     const ebooks = ref();
+    const params = ref();
+    params.value = {};
     const pagination = ref({
       current:1,
       pageSize:2,
@@ -111,18 +113,19 @@ export default defineComponent({
 
     const handleQuery = (params: any) => {
       loading.value = true;
-      axios.get('/ebook/list', params)
+      axios.get('/ebook/list', {
+          params: params
+          })
           .then((res) => {
             loading.value = false;
             const data = res.data;
             ebooks.value = data.content.list;
             pagination.value.current = params.page;
+            pagination.value.total = data.content.total;
           })
     };
 
     const handleTableChange = (pagination: any) => {
-      console.log('--分页参数--')
-      console.log((pagination));
       handleQuery({
         page: pagination.current,
         size: pagination.pageSize
@@ -130,7 +133,10 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      handleQuery({});
+      handleQuery({
+        page: pagination.value.current,
+        size: pagination.value.pageSize
+      });
     })
 
     return {
@@ -149,12 +155,9 @@ export default defineComponent({
 </script>
 
 <style scoped>
-  .ant-avatar {
+  img {
     width: 50px;
     height: 50px;
-    line-height: 50px;
-    border-radius: 8%;
-    margin: 5px 0;
   }
 
 </style>
