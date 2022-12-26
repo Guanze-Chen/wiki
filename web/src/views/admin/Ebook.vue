@@ -187,6 +187,8 @@ export default defineComponent({
 
     const handleQuery = (params: any) => {
       loading.value = true;
+      // 如果不清空现有数据 则编辑保存后重新加载数据后 再点编辑 则列表显示还是编辑前的数据
+      ebook.value = [];
       axios.get('/ebook/list', {
           params: {
             page: params.page,
@@ -289,8 +291,6 @@ export default defineComponent({
 
     const getCategoryName = (cid:number) => {
       let result = "";
-      console.log('----传入id-----')
-      console.log(cid)
       categorys.forEach((item:any) => {
         if (item.id === cid) {
           result = item.name;
