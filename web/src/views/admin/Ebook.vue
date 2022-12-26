@@ -19,7 +19,7 @@
 
           <template v-else-if="column.key === 'Action'">
             <a-space size="small">
-              <a-button type="primary">
+              <a-button type="primary" @click="edit">
                 编辑
               </a-button>
               &nbsp;
@@ -38,6 +38,14 @@
       </a-table>
     </a-layout-content>
   </a-layout>
+  <a-modal
+      v-model:visible="modalVisible"
+      title="编辑电子书"
+      :confirm-loading="modalLoading"
+      @ok="handleOk"
+  >
+    <p>test</p>
+  </a-modal>
 </template>
 
 <script lang="ts">
@@ -66,6 +74,7 @@ export default defineComponent({
       total:0
     });
     const loading = ref(false);
+
 
     const columns = [
       {
@@ -132,6 +141,27 @@ export default defineComponent({
       })
     };
 
+    const modalVisible = ref(false);
+    const modalLoading = ref(false);
+
+    const showModal = () => {
+      modalVisible.value = true;
+    }
+
+    const handleOk = () => {
+      modalLoading.value = true;
+      setTimeout(() => {
+        modalVisible.value = false;
+        modalLoading.value = false;
+      }, 2000)
+    }
+
+    const edit = () => {
+      modalVisible.value = true;
+    }
+
+
+
     onMounted(() => {
       handleQuery({
         page: pagination.value.current,
@@ -145,6 +175,11 @@ export default defineComponent({
       columns,
       loading,
       handleTableChange,
+      handleOk,
+      modalVisible,
+      modalLoading,
+      edit,
+
     }
 
 
