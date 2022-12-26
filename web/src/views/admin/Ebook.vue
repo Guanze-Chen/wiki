@@ -19,7 +19,7 @@
 
           <template v-else-if="column.key === 'Action'">
             <a-space size="small">
-              <a-button type="primary" @click="edit">
+              <a-button type="primary" @click="edit(record)">
                 编辑
               </a-button>
               &nbsp;
@@ -44,7 +44,43 @@
       :confirm-loading="modalLoading"
       @ok="handleOk"
   >
-    <p>test</p>
+    <a-form
+        :model="ebook"
+        :label-col="{ span: 8 }"
+        :wrapper-col="{ span: 16 }"
+    >
+      <a-form-item
+          label="封面"
+      >
+        <a-input v-model:value="ebook.cover" />
+      </a-form-item>
+
+      <a-form-item
+          label="名称"
+      >
+        <a-input v-model:value="ebook.name" />
+      </a-form-item>
+
+      <a-form-item
+          label="分类1"
+      >
+        <a-input v-model:value="ebook.category1Id" />
+      </a-form-item>
+
+      <a-form-item
+          label="分类2"
+      >
+        <a-input v-model:value="ebook.category2Id" />
+      </a-form-item>
+
+      <a-form-item
+          label="描述"
+      >
+        <a-textarea v-model:value="ebook.description"/>
+      </a-form-item>
+
+
+    </a-form>
   </a-modal>
 </template>
 
@@ -156,9 +192,14 @@ export default defineComponent({
       }, 2000)
     }
 
-    const edit = () => {
+    const ebook = ref({});
+
+    const edit = (record: any) => {
       modalVisible.value = true;
+      ebook.value = record;
     }
+
+
 
 
 
@@ -179,6 +220,7 @@ export default defineComponent({
       modalVisible,
       modalLoading,
       edit,
+      ebook
 
     }
 
