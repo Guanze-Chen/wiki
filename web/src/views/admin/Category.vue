@@ -17,10 +17,7 @@
           </a-form-item>
 
           <a-form-item>
-            <a-button type="primary" @click="handleQuery({
-          page:1,
-          size:pagination.pageSize
-          })">
+            <a-button type="primary" @click="handleQuery()">
               查询
             </a-button>
           </a-form-item>
@@ -38,8 +35,7 @@
       <a-table
           :columns="columns"
           :data-source="categorys"
-          :pagination="pagination"
-          @change="handleTableChange"
+          :pagination=false
       >
         <template #bodyCell="{column, record}">
           <template v-if="column.key === 'cover'">
@@ -67,9 +63,6 @@
           </template>
 
         </template>
-
-
-
 
 
       </a-table>
@@ -128,11 +121,6 @@ export default defineComponent({
     const categorys = ref();
     const param = ref();
     param.value = {};
-    const pagination = ref({
-      current:1,
-      pageSize:5,
-      total:0
-    });
     const loading = ref(false);
 
 
@@ -161,34 +149,21 @@ export default defineComponent({
 
     ]
 
-    const handleQuery = (params: any) => {
+    const handleQuery = () => {
       loading.value = true;
-      axios.get('/category/list', {
-        params: {
-          page: params.page,
-          size: params.size,
-          name: param.value.name,
-        }
+      axios.get('/category/all', {
       })
           .then((res) => {
             loading.value = false;
             const data = res.data;
             if (data.success) {
-              categorys.value = data.content.list;
-              pagination.value.current = params.page;
-              pagination.value.total = data.content.total;
+              categorys.value = data.content;
             } else {
               message.error(data.message);
             }
           })
     };
 
-    const handleTableChange = (pagination: any) => {
-      handleQuery({
-        page: pagination.current,
-        size: pagination.pageSize
-      })
-    };
 
     const modalVisible = ref(false);
     const modalLoading = ref(false);
@@ -211,10 +186,7 @@ export default defineComponent({
             const data = res.data;
             if (data.success) {
               // 重新加载列表
-              handleQuery({
-                page: pagination.value.current,
-                size: pagination.value.pageSize
-              })
+              handleQuery();
             }
           })
     }
@@ -228,10 +200,7 @@ export default defineComponent({
               modalVisible.value = false;
               modalLoading.value = false;
               // 重新加载列表
-              handleQuery({
-                page: pagination.value.current,
-                size: pagination.value.pageSize
-              })
+              handleQuery()
             } else {
               message.error(data.message);
             }
@@ -243,18 +212,13 @@ export default defineComponent({
 
 
     onMounted(() => {
-      handleQuery({
-        page: pagination.value.current,
-        size: pagination.value.pageSize
-      });
+      handleQuery();
     })
 
     return {
       categorys,
-      pagination,
       columns,
       loading,
-      handleTableChange,
       handleOk,
       modalVisible,
       modalLoading,
