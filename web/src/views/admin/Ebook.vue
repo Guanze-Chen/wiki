@@ -69,9 +69,6 @@
         </template>
 
 
-
-
-
       </a-table>
     </a-layout-content>
   </a-layout>
@@ -98,17 +95,14 @@
         <a-input v-model:value="ebook.name" />
       </a-form-item>
 
-      <a-form-item
-          label="分类1"
-      >
-        <a-input v-model:value="ebook.category1Id" />
-      </a-form-item>
+     <a-form-item label="分类">
+       <a-cascader
+           v-model:value="categoryIds"
+           :options="level1"
+           :field-names = "{label: 'name', value: 'id', children: 'children'}"
+           placeholder="Please select" />
 
-      <a-form-item
-          label="分类2"
-      >
-        <a-input v-model:value="ebook.category2Id" />
-      </a-form-item>
+     </a-form-item>
 
       <a-form-item
           label="描述"
@@ -222,14 +216,18 @@ export default defineComponent({
       })
     };
 
+     //  -----表单-----
+    const categoryIds = ref();
     const modalVisible = ref(false);
     const modalLoading = ref(false);
+    const level1 = ref();
 
-    const ebook = ref({});
+    const ebook = ref();
 
     const edit = (record: any) => {
       modalVisible.value = true;
       ebook.value = Tool.copy(record);
+      categoryIds.value = [ebook.value.category1Id, ebook.value.category2Id];
     }
 
     const add = () => {
@@ -253,6 +251,8 @@ export default defineComponent({
 
     const handleOk = () => {
       modalLoading.value = true;
+      ebook.value.category1Id = categoryIds.value[0];
+      ebook.value.category2Id = categoryIds.value[1];
       axios.post("/ebook/save", ebook.value)
           .then((res) => {
             const data = res.data;
@@ -272,9 +272,27 @@ export default defineComponent({
           })
     }
 
+    const handleQueryCategory = () => {
+      loading.value = true;
+      axios.get('/category/all', {
+      })
+          .then((res) => {
+            loading.value = false;
+            const data = res.data;
+            if (data.success) {
+              const categorys = data.content;
+              level1.value = [];
+              level1.value = Tool.array2Tree(categorys, 0);
+            } else {
+              message.error(data.message);
+            }
+          })
+    };
+
 
 
     onMounted(() => {
+      handleQueryCategory();
       handleQuery({
         page: pagination.value.current,
         size: pagination.value.pageSize
@@ -296,6 +314,9 @@ export default defineComponent({
       ebook,
       handleQuery,
       param,
+
+      categoryIds,
+      level1,
 
     }
 
