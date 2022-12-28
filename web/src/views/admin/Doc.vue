@@ -297,8 +297,10 @@ export default defineComponent({
     }
 
     const handleDelete = (id: number) => {
+      // 先清除之前存储过的数据
+      deleteIds.length = 0;
+      deleteNames.length = 0;
       getDeleteIds(level1.value, id);
-
       Modal.confirm({
         title: '重要提醒',
         icon: createVNode(ExclamationCircleOutlined),
