@@ -406,6 +406,8 @@ export default defineComponent({
 
 
     const edit = (record: any) => {
+      // 清空富文本框
+      valueHtml.value = "";
       modalVisible.value = true;
       doc.value = Tool.copy(record);
 
@@ -420,6 +422,8 @@ export default defineComponent({
     }
 
     const add = () => {
+      valueHtml.value = "";
+      message.success("请在右边编辑器添加!")
       modalVisible.value = true;
       doc.value = {
         ebookId: route.query.ebookId
@@ -460,10 +464,9 @@ export default defineComponent({
           .then((res) => {
             const data = res.data;
             if (data.success) {
-              modalVisible.value = false;
-              modalLoading.value = false;
               // 重新加载列表
               handleQuery()
+              message.success("保存成功!");
             } else {
               message.error(data.message);
             }
