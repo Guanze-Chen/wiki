@@ -1,6 +1,7 @@
 <template>
   <a-layout>
     <a-layout-content :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }">
+      <h3 v-if="level1.length === 0">对不起，相关文档还在收集中！</h3>
       <a-row>
         <a-col :span="6">
           <a-tree
@@ -9,6 +10,7 @@
               @select="onSelect"
               :field-names="{title: 'name', key: 'id', value: 'id'}"
               :defaultExpandAll="true"
+              :defaultSelectedKeys="defaultSelectedKeys"
           >
           </a-tree>
         </a-col>
@@ -42,6 +44,8 @@ export default defineComponent({
     const route = useRoute();
     const docs = ref();
     const html = ref();
+    const defaultSelectedKeys = ref();
+    defaultSelectedKeys.value = [];
 
     /**
      * 一级分类树，children属性就是二级分类
@@ -87,23 +91,6 @@ export default defineComponent({
     };
 
 
-    const handleQuery = () => {
-
-      axios.get('/doc/all/' + route.query.ebookId, {
-      })
-          .then((res) => {
-            const data = res.data;
-            if (data.success) {
-              docs.value = data.content;
-
-              level1.value = [];
-              level1.value = Tool.array2Tree(docs.value, 0);
-            } else {
-              message.error(data.message);
-            }
-          })
-    };
-
     const handleQueryContent = (id:number) => {
 
       axios.get('/doc/mediumtext/' + id, {
@@ -118,6 +105,30 @@ export default defineComponent({
             }
           })
     };
+
+    const handleQuery = () => {
+
+      axios.get('/doc/all/' + route.query.ebookId, {
+      })
+          .then((res) => {
+            const data = res.data;
+            if (data.success) {
+              docs.value = data.content;
+
+              level1.value = [];
+              level1.value = Tool.array2Tree(docs.value, 0);
+
+              if (Tool.isNotEmpty(level1)) {
+                defaultSelectedKeys.value = [level1.value[0].id]; // 选中状态
+                handleQueryContent(level1.value[0].id); // 进行查询
+              }
+            } else {
+              message.error(data.message);
+            }
+          })
+    };
+
+
 
     const onSelect = (selectedKeys: any, info: any) => {
       console.log('selected', selectedKeys, info);
@@ -139,6 +150,8 @@ export default defineComponent({
 
       html,
       onSelect,
+
+      defaultSelectedKeys,
     }
 
 

@@ -248,6 +248,7 @@ export default defineComponent({
     const route = useRoute();
 
     const docs = ref();
+
     const param = ref();
     param.value = {};
     const loading = ref(false);
@@ -400,7 +401,9 @@ export default defineComponent({
 
 
     const doc = ref();
-    doc.value = {};
+    doc.value = {
+      ebookId: route.query.ebookId
+    }
 
 
     // 内容查询
@@ -457,7 +460,7 @@ export default defineComponent({
         icon: createVNode(ExclamationCircleOutlined),
         content: '将删除：【' + deleteNames.join("，") + "】删除后不可恢复，确认删除？",
         onOk() {
-          axios.delete("/doc/delete" + deleteIds.join(","))
+          axios.delete("/doc/delete/" + deleteIds.join(","))
               .then((res) => {
                 const data = res.data;
                 if (data.success) {
