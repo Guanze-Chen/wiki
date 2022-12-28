@@ -118,9 +118,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
-import { SearchOutlined } from '@ant-design/icons-vue';
-import { message } from "ant-design-vue";
+import {createVNode, defineComponent, onMounted, ref} from 'vue';
+import { SearchOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
+import { message, Modal } from "ant-design-vue";
 import axios from 'axios';
 import {Tool} from "@/utils/tool";
 import {useRoute} from "vue-router";
@@ -133,6 +133,7 @@ export default defineComponent({
   name: 'Doc',
   components: {
     SearchOutlined,
+    ExclamationCircleOutlined,
   },
   setup() {
     const route = useRoute();
@@ -183,7 +184,10 @@ export default defineComponent({
     let treeSelectData = ref();
     treeSelectData.value = [];
 
-    const ids: Array<string> = [];
+    const deleteIds: Array<string> = [];
+    const deleteNames: Array<string> = [];
+
+
 
 
     const setDisable = (treeSelectData: any, id: any) => {
@@ -223,7 +227,8 @@ export default defineComponent({
         if (node.id === id) {
           // 如果当前节点就是目标节点
           // 将目标节点添加进入ids
-          ids.push(id);
+          deleteIds.push(id);
+          deleteNames.push(node.name);
 
           const children = node.children;
           if (Tool.isNotEmpty(children)) {
@@ -293,14 +298,24 @@ export default defineComponent({
 
     const handleDelete = (id: number) => {
       getDeleteIds(level1.value, id);
-      axios.delete("/doc/delete/" + ids.join(","))
-          .then((res) => {
-            const data = res.data;
-            if (data.success) {
-              // 重新加载列表
-              handleQuery();
-            }
-          })
+
+      Modal.confirm({
+        title: '重要提醒',
+        icon: createVNode(ExclamationCircleOutlined),
+        content: '将删除：【' + deleteNames.join("，") + "】删除后不可恢复，确认删除？",
+        onOk() {
+          axios.delete("/doc/delete" + deleteIds.join(","))
+              .then((res) => {
+                const data = res.data;
+                if (data.success) {
+                  message.success("删除成功");
+                  handleQuery();
+                }
+              })
+        }
+
+      })
+
     }
 
     const handleOk = () => {
