@@ -241,10 +241,10 @@ export default defineComponent({
     param.value = {};
     const loading = ref(false);
 
+
     // 编辑器
     // 编辑器实例，必须用 shallowRef
     const editorRef = shallowRef();
-    const editor = editorRef.value;
 
     // 内容 HTML
     const valueHtml = ref('');
@@ -363,7 +363,7 @@ export default defineComponent({
       loading.value = true;
       // 清空现有数据
       level1.value = [];
-      axios.get('/doc/all', {
+      axios.get('/doc/all/' + route.query.ebookId, {
       })
           .then((res) => {
             loading.value = false;
@@ -373,6 +373,9 @@ export default defineComponent({
 
               level1.value = [];
               level1.value = Tool.array2Tree(docs.value, 0);
+
+              treeSelectData.value = Tool.copy(level1.value);
+              treeSelectData.value.unshift({id: 0, name: '无'});
             } else {
               message.error(data.message);
             }
