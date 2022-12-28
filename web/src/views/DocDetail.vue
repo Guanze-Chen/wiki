@@ -13,6 +13,7 @@
           </a-tree>
         </a-col>
         <a-col :span="18">
+          <div :innerHTML="html"></div>
         </a-col>
       </a-row>
     </a-layout-content>
@@ -40,6 +41,7 @@ export default defineComponent({
   setup() {
     const route = useRoute();
     const docs = ref();
+    const html = ref();
 
     /**
      * 一级分类树，children属性就是二级分类
@@ -102,6 +104,28 @@ export default defineComponent({
           })
     };
 
+    const handleQueryContent = (id:number) => {
+
+      axios.get('/doc/mediumtext/' + id, {
+      })
+          .then((res) => {
+            const data = res.data;
+            if (data.success) {
+              html.value = data.content;
+
+            } else {
+              message.error(data.message);
+            }
+          })
+    };
+
+    const onSelect = (selectedKeys: any, info: any) => {
+      console.log('selected', selectedKeys, info);
+      if(Tool.isNotEmpty(selectedKeys)) {
+        handleQueryContent(selectedKeys[0]);
+      }
+    }
+
 
 
 
@@ -112,6 +136,9 @@ export default defineComponent({
     return {
 
      level1,
+
+      html,
+      onSelect,
     }
 
 
