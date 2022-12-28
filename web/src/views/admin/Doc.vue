@@ -3,11 +3,12 @@
     <a-layout-content
         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
-      <a-row>
+      <a-row :gutter="24">
         <a-col :span="8">
           <div>
             <a-form
                 layout="inline"
+                :model="param"
             >
               <a-form-item
               >
@@ -33,18 +34,21 @@
             </a-form>
           </div>
           <a-table
+              v-if="level1&&level1.length > 0"
               :columns="columns"
               :data-source="level1"
               :pagination=false
+              size="small"
+              :defaultExpandAllRows="true"
           >
             <template #bodyCell="{column, record}">
-              <template v-if="column.key === 'cover'">
-                <img :src=record.cover alt="cover">
+              <template v-if="column.key === 'name'">
+                {{record.sort}} {{record.name}}
               </template>
 
               <template v-else-if="column.key === 'Action'">
                 <a-space size="small">
-                  <a-button type="primary" @click="edit(record)">
+                  <a-button type="primary" size="small" @click="edit(record)">
                     编辑
                   </a-button>
 
@@ -54,7 +58,7 @@
                       cancel-text="No"
                       @confirm="handleDelete(record.id)"
                   >
-                    <a-button type="danger" >
+                    <a-button size="small" type="danger" >
                       删除
                     </a-button>
                   </a-popconfirm>
@@ -67,10 +71,18 @@
           </a-table>
         </a-col>
         <a-col :span="16">
+          <p>
+            <a-form layout="inline" :model="param">
+              <a-form-item>
+                <a-button type="primary" @click="handleSave">
+                  保存
+                </a-button>
+              </a-form-item>
+            </a-form>
+          </p>
           <a-form
               :model="doc"
-              :label-col="{ span: 8 }"
-              :wrapper-col="{ span: 16 }"
+              layout="vertical"
           >
             <a-form-item
                 label="父文档"
@@ -128,7 +140,6 @@
           </a-form>
         </a-col>
       </a-row>
-
 
     </a-layout-content>
   </a-layout>
@@ -236,7 +247,7 @@ export default defineComponent({
     const editorRef = shallowRef()
 
     // 内容 HTML
-    const valueHtml = ref('<p>hello</p>')
+    const valueHtml = ref('<p>请输入内容</p>')
 
     const toolbarConfig = {}
     const editorConfig = { placeholder: '请输入内容...' }
@@ -247,11 +258,11 @@ export default defineComponent({
 
 
     const columns = [
-      {
-        title:'一级分类',
-        dataIndex:'parent',
-        key: 'parent'
-      },
+      // {
+      //   title:'一级分类',
+      //   dataIndex:'parent',
+      //   key: 'parent'
+      // },
       {
         title:'名称',
         dataIndex:'name',
@@ -282,6 +293,7 @@ export default defineComponent({
      * }]
      */
     const level1 = ref(); // 一级分类树，children属性就是二级分类
+    level1.value = [];
     let treeSelectData = ref();
     treeSelectData.value = [];
 
@@ -421,7 +433,7 @@ export default defineComponent({
 
     }
 
-    const handleOk = () => {
+    const handleSave = () => {
       modalLoading.value = true;
       axios.post("/doc/save", doc.value)
           .then((res) => {
@@ -442,9 +454,9 @@ export default defineComponent({
 
     onMounted(() => {
       handleQuery();
-      setTimeout(() => {
-        valueHtml.value = '<p>模拟 Ajax 异步设置内容</p>'
-      }, 1500)
+      // setTimeout(() => {
+      //   valueHtml.value = '<p>模拟 Ajax 异步设置内容</p>'
+      // }, 1500)
     })
 
     return {
@@ -452,7 +464,7 @@ export default defineComponent({
       level1,
       columns,
       loading,
-      handleOk,
+      handleSave,
       modalVisible,
       modalLoading,
       edit,
