@@ -247,10 +247,10 @@ export default defineComponent({
     const editor = editorRef.value;
 
     // 内容 HTML
-    const valueHtml = ref('<p>请输入内容</p>')
+    const valueHtml = ref('');
 
-    const toolbarConfig = {}
-    const editorConfig = { placeholder: '请输入内容...' }
+    const toolbarConfig = {};
+    const editorConfig = { placeholder: '请输入内容...' };
 
     const handleCreated = (editor: any) => {
       editorRef.value = editor // 记录 editor 实例，重要！
@@ -388,9 +388,28 @@ export default defineComponent({
     const doc = ref();
     doc.value = {};
 
+
+    // 内容查询
+
+    const handleQueryContent = () => {
+      axios.get('/doc/mediumtext/' + doc.value.id, {
+      })
+          .then((res) => {
+            const data = res.data;
+            if (data.success) {
+              valueHtml.value = data.content
+            } else {
+              message.error(data.message);
+            }
+          })
+    };
+
+
     const edit = (record: any) => {
       modalVisible.value = true;
       doc.value = Tool.copy(record);
+
+      handleQueryContent();
 
       //不能选择当前节点及其所有子孙节点作为父节点
       treeSelectData.value = Tool.copy(level1.value);
@@ -452,6 +471,7 @@ export default defineComponent({
 
           })
     }
+
 
 
     onMounted(() => {
