@@ -48,7 +48,7 @@
 
           <template v-else-if="column.key === 'Action'">
             <a-space size="small">
-              <router-link to="/doc">
+              <router-link :to="'/doc?ebookId='+record.id">
               <a-button type="primary" @click="edit(record)">
                 文档管理
               </a-button>
