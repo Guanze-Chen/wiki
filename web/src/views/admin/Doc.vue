@@ -113,17 +113,37 @@
         <a-input v-model:value="doc.sort" />
       </a-form-item>
 
+      <a-form-item label="内容">
+        <div id="content">
+          <Toolbar
+              style="border-bottom: 1px solid #ccc"
+              :editor="editorRef"
+              :defaultConfig="toolbarConfig"
+              :mode="mode"
+          />
+          <Editor
+              style="height: 500px; overflow-y: hidden;"
+              v-model="valueHtml"
+              :defaultConfig="editorConfig"
+              :mode="mode"
+              @onCreated="handleCreated"
+          />
+        </div>
+      </a-form-item>
+
     </a-form>
   </a-modal>
 </template>
 
 <script lang="ts">
-import {createVNode, defineComponent, onMounted, ref} from 'vue';
+import {createVNode, defineComponent, shallowRef, onMounted, ref} from 'vue';
 import { SearchOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { message, Modal } from "ant-design-vue";
 import axios from 'axios';
 import {Tool} from "@/utils/tool";
 import {useRoute} from "vue-router";
+import '@wangeditor/editor/dist/css/style.css' // 引入 css
+import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 
 
 
@@ -134,6 +154,8 @@ export default defineComponent({
   components: {
     SearchOutlined,
     ExclamationCircleOutlined,
+    Editor,
+    Toolbar,
   },
   setup() {
     const route = useRoute();
@@ -143,6 +165,20 @@ export default defineComponent({
     const param = ref();
     param.value = {};
     const loading = ref(false);
+
+    // 编辑器
+    // 编辑器实例，必须用 shallowRef
+    const editorRef = shallowRef()
+
+    // 内容 HTML
+    const valueHtml = ref('<p>hello</p>')
+
+    const toolbarConfig = {}
+    const editorConfig = { placeholder: '请输入内容...' }
+
+    const handleCreated = (editor: any) => {
+      editorRef.value = editor // 记录 editor 实例，重要！
+    }
 
 
     const columns = [
@@ -339,9 +375,11 @@ export default defineComponent({
     }
 
 
-
     onMounted(() => {
       handleQuery();
+      setTimeout(() => {
+        valueHtml.value = '<p>模拟 Ajax 异步设置内容</p>'
+      }, 1500)
     })
 
     return {
@@ -359,7 +397,14 @@ export default defineComponent({
       handleQuery,
       param,
 
-      treeSelectData
+      treeSelectData,
+
+      editorRef,
+      valueHtml,
+      mode: 'default', // 或 'simple'
+      toolbarConfig,
+      editorConfig,
+      handleCreated
     }
 
 
