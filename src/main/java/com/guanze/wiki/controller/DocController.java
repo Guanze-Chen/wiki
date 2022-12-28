@@ -2,15 +2,17 @@ package com.guanze.wiki.controller;
 
 import com.guanze.wiki.req.DocQueryReq;
 import com.guanze.wiki.req.DocSaveReq;
-import com.guanze.wiki.resp.DocQueryResp;
 import com.guanze.wiki.resp.CommonResp;
+import com.guanze.wiki.resp.DocQueryResp;
 import com.guanze.wiki.resp.PageResp;
 import com.guanze.wiki.service.DocService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/doc")
@@ -41,10 +43,12 @@ public class DocController {
         return resp;
     }
 
-    @DeleteMapping("/delete/{id}")
-    public CommonResp delete(@PathVariable Long id) {
+    @DeleteMapping("/delete/{idStr}")
+    public CommonResp delete(@PathVariable String idStr) {
         CommonResp resp= new CommonResp<>();
-        docService.delete(id);
+        String[] idArray = idStr.split(",");
+        List<Long> list = Arrays.stream(idArray).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+        docService.delete(list);
         return resp;
     }
 }

@@ -183,6 +183,8 @@ export default defineComponent({
     let treeSelectData = ref();
     treeSelectData.value = [];
 
+    const ids: Array<string> = [];
+
 
     const setDisable = (treeSelectData: any, id: any) => {
       // console.log(treeSelectData, id);
@@ -207,6 +209,33 @@ export default defineComponent({
           const children = node.children;
           if (Tool.isNotEmpty(children)) {
             setDisable(children, id);
+          }
+        }
+      }
+    };
+
+    // 查找整课数的id
+    const getDeleteIds = (treeSelectData: any, id: any) => {
+      // console.log(treeSelectData, id);
+      // 遍历数组，即遍历某一层节点
+      for (let i = 0; i < treeSelectData.length; i++) {
+        const node = treeSelectData[i];
+        if (node.id === id) {
+          // 如果当前节点就是目标节点
+          // 将目标节点添加进入ids
+          ids.push(id);
+
+          const children = node.children;
+          if (Tool.isNotEmpty(children)) {
+            for (let j = 0; j < children.length; j++) {
+              getDeleteIds(children, children[j].id)
+            }
+          }
+        } else {
+          // 如果当前节点不是目标节点，则到其子节点再找找看。
+          const children = node.children;
+          if (Tool.isNotEmpty(children)) {
+            getDeleteIds(children, id);
           }
         }
       }
@@ -263,7 +292,8 @@ export default defineComponent({
     }
 
     const handleDelete = (id: number) => {
-      axios.delete("/doc/delete/" + id)
+      getDeleteIds(level1.value, id);
+      axios.delete("/doc/delete/" + ids.join(","))
           .then((res) => {
             const data = res.data;
             if (data.success) {
