@@ -235,7 +235,6 @@ export default defineComponent({
   },
   setup() {
     const route = useRoute();
-    console.log('路由', route);
 
     const docs = ref();
     const param = ref();
@@ -244,7 +243,8 @@ export default defineComponent({
 
     // 编辑器
     // 编辑器实例，必须用 shallowRef
-    const editorRef = shallowRef()
+    const editorRef = shallowRef();
+    const editor = editorRef.value;
 
     // 内容 HTML
     const valueHtml = ref('<p>请输入内容</p>')
@@ -385,7 +385,8 @@ export default defineComponent({
 
 
 
-    const doc = ref({});
+    const doc = ref();
+    doc.value = {};
 
     const edit = (record: any) => {
       modalVisible.value = true;
@@ -435,6 +436,7 @@ export default defineComponent({
 
     const handleSave = () => {
       modalLoading.value = true;
+      doc.value.content = valueHtml.value;
       axios.post("/doc/save", doc.value)
           .then((res) => {
             const data = res.data;
