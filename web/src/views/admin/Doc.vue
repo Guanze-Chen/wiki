@@ -79,6 +79,29 @@
         :wrapper-col="{ span: 16 }"
     >
       <a-form-item
+          label="父文档"
+      >
+        <a-tree-select
+            v-model:value="doc.parent"
+            show-search
+            style="width: 100%"
+            :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+            placeholder="Please select"
+            allow-clear
+            tree-default-expand-all
+            :tree-data="treeSelectData"
+            :field-names="{
+              title: 'name',
+              label: 'name',
+              value: 'id',
+            }"
+        >
+
+        </a-tree-select>
+
+      </a-form-item>
+
+      <a-form-item
           label="一级分类"
       >
         <a-input v-model:value="doc.parent" />
@@ -170,9 +193,42 @@ export default defineComponent({
      * }]
      */
     const level1 = ref(); // 一级分类树，children属性就是二级分类
+    let treeSelectData = ref();
+    treeSelectData.value = [];
+
+
+    const setDisable = (treeSelectData: any, id: any) => {
+      // console.log(treeSelectData, id);
+      // 遍历数组，即遍历某一层节点
+      for (let i = 0; i < treeSelectData.length; i++) {
+        const node = treeSelectData[i];
+        if (node.id === id) {
+          // 如果当前节点就是目标节点
+          console.log("disabled", node);
+          // 将目标节点设置为disabled
+          node.disabled = true;
+
+          // 遍历所有子节点，将所有子节点全部都加上disabled
+          const children = node.children;
+          if (Tool.isNotEmpty(children)) {
+            for (let j = 0; j < children.length; j++) {
+              setDisable(children, children[j].id)
+            }
+          }
+        } else {
+          // 如果当前节点不是目标节点，则到其子节点再找找看。
+          const children = node.children;
+          if (Tool.isNotEmpty(children)) {
+            setDisable(children, id);
+          }
+        }
+      }
+    };
 
     const handleQuery = () => {
       loading.value = true;
+      // 清空现有数据
+      level1.value = [];
       axios.get('/doc/all', {
       })
           .then((res) => {
@@ -200,11 +256,21 @@ export default defineComponent({
     const edit = (record: any) => {
       modalVisible.value = true;
       doc.value = Tool.copy(record);
+
+      //不能选择当前节点及其所有子孙节点作为父节点
+      treeSelectData.value = Tool.copy(level1.value);
+      setDisable(treeSelectData.value, record.id);
+
+      // 为选择数添加一个无
+      treeSelectData.value.unshift({id:0, name: '无'});
     }
 
     const add = () => {
       modalVisible.value = true;
       doc.value = {};
+
+      treeSelectData.value = Tool.copy(level1.value);
+      treeSelectData.value.unshift({id:0, name: '无'});
     }
 
     const handleDelete = (id: number) => {
@@ -257,6 +323,7 @@ export default defineComponent({
       handleQuery,
       param,
 
+      treeSelectData
     }
 
 
