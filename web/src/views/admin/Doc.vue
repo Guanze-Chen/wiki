@@ -119,6 +119,13 @@
               <a-input v-model:value="doc.sort" />
             </a-form-item>
 
+            <a-form-item>
+              <a-button type="primary" @click="handlePreviewContent">
+                <EyeOutlined />
+                内容预览
+              </a-button>
+            </a-form-item>
+
             <a-form-item label="内容">
               <div id="content">
                 <Toolbar
@@ -141,6 +148,9 @@
         </a-col>
       </a-row>
 
+      <a-drawer width="900" placement="right" :closable="false" :visible="drawerVisible" @close="onDrawerClose">
+        <div class="wangeditor" :innerHTML="previewHtml"></div>
+      </a-drawer>
     </a-layout-content>
   </a-layout>
 <!--  <a-modal-->
@@ -213,7 +223,7 @@
 
 <script lang="ts">
 import {createVNode, defineComponent, shallowRef, onMounted, ref} from 'vue';
-import { SearchOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
+import { SearchOutlined, ExclamationCircleOutlined, EyeOutlined } from '@ant-design/icons-vue';
 import { message, Modal } from "ant-design-vue";
 import axios from 'axios';
 import {Tool} from "@/utils/tool";
@@ -232,6 +242,7 @@ export default defineComponent({
     ExclamationCircleOutlined,
     Editor,
     Toolbar,
+    EyeOutlined,
   },
   setup() {
     const route = useRoute();
@@ -478,13 +489,24 @@ export default defineComponent({
           })
     }
 
+    // 富文本预览
+    const drawerVisible = ref(false);
+    const previewHtml = ref();
+    const handlePreviewContent = () => {
+      const html = valueHtml.value;
+      previewHtml.value = html;
+      drawerVisible.value = true;
+    };
+
+    const onDrawerClose = () => {
+      drawerVisible.value = false;
+    }
+
+
 
 
     onMounted(() => {
       handleQuery();
-      // setTimeout(() => {
-      //   valueHtml.value = '<p>模拟 Ajax 异步设置内容</p>'
-      // }, 1500)
     })
 
     return {
@@ -509,7 +531,12 @@ export default defineComponent({
       mode: 'default', // 或 'simple'
       toolbarConfig,
       editorConfig,
-      handleCreated
+      handleCreated,
+
+      drawerVisible,
+      previewHtml,
+      handlePreviewContent,
+      onDrawerClose,
     }
 
 
