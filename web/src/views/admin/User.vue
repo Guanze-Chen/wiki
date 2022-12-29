@@ -97,8 +97,8 @@
         <a-input v-model:value="user.name" />
       </a-form-item>
 
-     <a-form-item label="密码">
-       <a-input-password v-model:value="user.password" />
+     <a-form-item label="密码" v-show="!user.id">
+       <a-input-password v-model:value="user.password"/>
 
      </a-form-item>
 
