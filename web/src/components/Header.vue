@@ -1,7 +1,10 @@
 <template>
   <a-layout-header class="header">
     <div class="logo" />
-    <a class="login-menu" @click="showLoginModal">
+    <a class="login-menu" v-show="user.id">
+      <span>欢迎, {{user.name}}</span>
+    </a>
+    <a class="login-menu" v-show="!user.id" @click="showLoginModal">
       <span>登录</span>
     </a>
     <a-menu
@@ -62,10 +65,17 @@ declare let KEY: any;
 export default defineComponent({
   name: 'TheHeader',
   setup() {
+
+    // 登录的user
     const loginUser = ref({
       loginName: "test",
       password:"123456"
     });
+
+    // 显示的user
+
+    const user = ref();
+    user.value = {};
 
     const loginModalVisible = ref(false);
     const loginModalLoading = ref(false);
@@ -85,6 +95,7 @@ export default defineComponent({
               loginModalLoading.value = false;
               message.success("登录成功!");
               loginModalVisible.value = false;
+              user.value = data.content;
             } else {
               message.error(data.message);
               loginModalVisible.value = false;
@@ -98,6 +109,7 @@ export default defineComponent({
       showLoginModal,
       login,
       loginUser,
+      user,
     }
 
   }
