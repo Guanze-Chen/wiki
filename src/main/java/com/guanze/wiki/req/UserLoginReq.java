@@ -1,14 +1,14 @@
 package com.guanze.wiki.req;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
 
 public class UserLoginReq {
 
-    @NotNull(message = "【登录名】不能为空")
+    @NotEmpty(message = "【登录名】不能为空")
     private String loginName;
 
 
-    @NotNull(message = "【密码】不能为空")
+    @NotEmpty(message = "【密码】不能为空")
     private String password;
 
     public String getLoginName() {
