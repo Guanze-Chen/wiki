@@ -1,10 +1,12 @@
 package com.guanze.wiki.controller;
 
+import com.guanze.wiki.req.UserLoginReq;
 import com.guanze.wiki.req.UserQueryReq;
 import com.guanze.wiki.req.UserResetPwdReq;
 import com.guanze.wiki.req.UserSaveReq;
 import com.guanze.wiki.resp.CommonResp;
 import com.guanze.wiki.resp.PageResp;
+import com.guanze.wiki.resp.UserLoginResp;
 import com.guanze.wiki.resp.UserQueryResp;
 import com.guanze.wiki.service.UserService;
 import org.springframework.util.DigestUtils;
@@ -51,6 +53,16 @@ public class UserController {
         // 加密存储密码
         req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));
         userService.resetPwd(req);
+        return resp;
+    }
+
+    @PostMapping("/login")
+    public CommonResp login(@Valid @RequestBody UserLoginReq req) {
+        // 加密存储密码
+        req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));
+        CommonResp<UserLoginResp> resp= new CommonResp<>();
+        UserLoginResp userLoginResp =  userService.login(req);
+        resp.setContent(userLoginResp);
         return resp;
     }
 
