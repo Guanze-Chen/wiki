@@ -16,6 +16,9 @@
       <a-menu-item key="3">
         <router-link to="/category">分类管理</router-link>
       </a-menu-item>
+      <a-menu-item key="2">
+        <router-link to="/user">用户管理</router-link>
+      </a-menu-item>
       <a-menu-item key="4">
         <router-link to="/about">关于本站</router-link>
       </a-menu-item>
