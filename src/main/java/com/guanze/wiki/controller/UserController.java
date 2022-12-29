@@ -6,6 +6,7 @@ import com.guanze.wiki.resp.CommonResp;
 import com.guanze.wiki.resp.PageResp;
 import com.guanze.wiki.resp.UserQueryResp;
 import com.guanze.wiki.service.UserService;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -29,6 +30,8 @@ public class UserController {
     @PostMapping("/save")
     public CommonResp save(@Valid @RequestBody UserSaveReq req) {
         CommonResp resp= new CommonResp<>();
+        // 加密存储密码
+        req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));
         userService.save(req);
         return resp;
     }
