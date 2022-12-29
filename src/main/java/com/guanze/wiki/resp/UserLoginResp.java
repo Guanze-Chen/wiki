@@ -7,8 +7,27 @@
 
     private String name;
 
+    private Long token;
 
-    public Long getId() {
+     public Long getToken() {
+         return token;
+     }
+
+     @Override
+     public String toString() {
+         return "UserLoginResp{" +
+                 "id=" + id +
+                 ", loginName='" + loginName + '\'' +
+                 ", name='" + name + '\'' +
+                 ", token=" + token +
+                 '}';
+     }
+
+     public void setToken(Long token) {
+         this.token = token;
+     }
+
+     public Long getId() {
         return id;
     }
 
@@ -32,16 +51,4 @@
         this.name = name;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getClass().getSimpleName());
-        sb.append(" [");
-        sb.append("Hash = ").append(hashCode());
-        sb.append(", id=").append(id);
-        sb.append(", loginName=").append(loginName);
-        sb.append(", name=").append(name);
-        sb.append("]");
-        return sb.toString();
-    }
-}
+ }
