@@ -1,12 +1,24 @@
 <template>
   <a-layout-header class="header">
     <div class="logo" />
+    <a-popconfirm
+        title="Are you sure log out?"
+        ok-text="Yes"
+        cancel-text="No"
+        @confirm="logout"
+    >
+      <a class="login-menu" v-show="user.id">
+        <span>退出登录</span>
+      </a>
+
+    </a-popconfirm>
     <a class="login-menu" v-show="user.id">
       <span>欢迎, {{user.name}}</span>
     </a>
     <a class="login-menu" v-show="!user.id" @click="showLoginModal">
       <span>登录</span>
     </a>
+
     <a-menu
         theme="dark"
         mode="horizontal"
@@ -96,10 +108,25 @@ export default defineComponent({
               loginModalLoading.value = false;
               message.success("登录成功!");
               loginModalVisible.value = false;
-              store.commit("setUser", user.value);
+              store.commit("setUser", data.content);
             } else {
               message.error(data.message);
               loginModalVisible.value = false;
+            }
+          })
+    };
+
+    const logout = () => {
+      axios.get('/user/logout/'+ user.value.token)
+          .then((res) => {
+            const data = res.data;
+            if (data.success) {
+
+              message.success("退出登录!");
+              store.commit("setUser", {});
+
+            } else {
+              message.error(data.message);
             }
           })
     };
@@ -111,6 +138,8 @@ export default defineComponent({
       login,
       loginUser,
       user,
+
+      logout,
     }
 
   }
@@ -121,5 +150,7 @@ export default defineComponent({
   .login-menu {
     float: right;
     color: white;
+    margin-left: 10px;
+    margin-right: 10px;
   }
 </style>

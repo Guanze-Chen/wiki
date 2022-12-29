@@ -11,6 +11,8 @@ import com.guanze.wiki.resp.UserLoginResp;
 import com.guanze.wiki.resp.UserQueryResp;
 import com.guanze.wiki.service.UserService;
 import com.guanze.wiki.utils.SnowFlake;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,8 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
+    private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
 
     @Resource
     private UserService userService;
@@ -76,6 +80,14 @@ public class UserController {
         userLoginResp.setToken(token);
         redisTemplate.opsForValue().set(token, JSONObject.toJSONString(userLoginResp), 3600*24, TimeUnit.SECONDS);
         resp.setContent(userLoginResp);
+        return resp;
+    }
+
+    @GetMapping("/logout/{token}")
+    public CommonResp logout(@PathVariable Long token) {
+        CommonResp resp= new CommonResp<>();
+        redisTemplate.delete(token);
+        LOG.info("从redis中删除token: {}", token);
         return resp;
     }
 
