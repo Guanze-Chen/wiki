@@ -8,6 +8,7 @@ import com.guanze.wiki.exception.BusinessException;
 import com.guanze.wiki.exception.BusinessExceptionCode;
 import com.guanze.wiki.mapper.UserMapper;
 import com.guanze.wiki.req.UserQueryReq;
+import com.guanze.wiki.req.UserResetPwdReq;
 import com.guanze.wiki.req.UserSaveReq;
 import com.guanze.wiki.resp.UserQueryResp;
 import com.guanze.wiki.resp.PageResp;
@@ -96,5 +97,12 @@ public class UserService {
         } else {
             return userList.get(0);
         }
+    }
+
+
+    public void resetPwd(UserResetPwdReq req) {
+        User user =CopyUtil.copy(req, User.class);
+        userMapper.updateByPrimaryKeySelective(user);
+
     }
 }

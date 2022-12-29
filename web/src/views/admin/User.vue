@@ -55,6 +55,10 @@
                 编辑
               </a-button>
 
+              <a-button type="primary" @click="resetPwd(record)">
+                重置密码
+              </a-button>
+
               <a-popconfirm
                   title="Are you sure delete this record?"
                   ok-text="Yes"
@@ -64,7 +68,10 @@
                 <a-button type="danger" >
                   删除
                 </a-button>
+
+
               </a-popconfirm>
+
 
             </a-space>
           </template>
@@ -101,6 +108,27 @@
        <a-input-password v-model:value="user.password"/>
 
      </a-form-item>
+
+
+    </a-form>
+  </a-modal>
+
+  <a-modal
+      v-model:visible="resetModalVisible"
+      title="重置密码"
+      :confirm-loading="resetModalLoading"
+      @ok="handleResetModalOk"
+  >
+    <a-form
+        :model="user"
+        :label-col="{ span: 8 }"
+        :wrapper-col="{ span: 16 }"
+    >
+
+      <a-form-item label="新密码">
+        <a-input-password v-model:value="user.password"/>
+
+      </a-form-item>
 
 
     </a-form>
@@ -243,6 +271,43 @@ export default defineComponent({
           })
     }
 
+    // 重置密码表单
+
+    //  -----表单-----
+    const resetModalVisible = ref(false);
+    const resetModalLoading = ref(false);
+
+    const resetPwd = (record: any) => {
+      resetModalVisible.value = true;
+      user.value = Tool.copy(record);
+      user.value.password = null;
+    }
+
+
+
+    const handleResetModalOk = () => {
+      resetModalVisible.value = true;
+      user.value.password = hexMd5(user.value.password + KEY);
+      axios.post("/user/resetpwd", user.value)
+          .then((res) => {
+            resetModalLoading.value = false;
+            const data = res.data;
+            if (data.success) {
+              resetModalVisible.value = false;
+              // 重新加载列表
+              handleQuery({
+                page: pagination.value.current,
+                size: pagination.value.pageSize
+              })
+            } else {
+              message.error(data.message);
+            }
+
+
+          })
+    }
+
+
 
     onMounted(() => {
       handleQuery({
@@ -266,6 +331,12 @@ export default defineComponent({
       user,
       handleQuery,
       param,
+
+      resetModalVisible,
+      resetModalLoading,
+      handleResetModalOk,
+      resetPwd,
+
 
 
     }

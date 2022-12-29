@@ -1,6 +1,7 @@
 package com.guanze.wiki.controller;
 
 import com.guanze.wiki.req.UserQueryReq;
+import com.guanze.wiki.req.UserResetPwdReq;
 import com.guanze.wiki.req.UserSaveReq;
 import com.guanze.wiki.resp.CommonResp;
 import com.guanze.wiki.resp.PageResp;
@@ -42,4 +43,15 @@ public class UserController {
         userService.delete(id);
         return resp;
     }
+
+    // 重置密码
+    @PostMapping("/resetpwd")
+    public CommonResp resetPwd(@Valid @RequestBody UserResetPwdReq req) {
+        CommonResp resp= new CommonResp<>();
+        // 加密存储密码
+        req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));
+        userService.resetPwd(req);
+        return resp;
+    }
+
 }
