@@ -88,7 +88,7 @@
       <a-form-item
           label="登录名"
       >
-        <a-input v-model:value="user.loginName" />
+        <a-input v-model:value="user.loginName" :disabled="!!user.id" />
       </a-form-item>
 
       <a-form-item
@@ -142,7 +142,7 @@ export default defineComponent({
         key: 'loginName'
       },
       {
-        title:'名称',
+        title:'昵称',
         dataIndex:'name',
         key: 'name'
       },
