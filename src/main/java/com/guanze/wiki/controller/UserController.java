@@ -76,15 +76,16 @@ public class UserController {
         req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));
         CommonResp<UserLoginResp> resp= new CommonResp<>();
         UserLoginResp userLoginResp =  userService.login(req);
-        long token = snowFlake.nextId();
-        userLoginResp.setToken(token);
-        redisTemplate.opsForValue().set(token, JSONObject.toJSONString(userLoginResp), 3600*24, TimeUnit.SECONDS);
+        Long token = snowFlake.nextId();
+        LOG.info("生成单点登录token：{}，并放入redis中", token);
+        userLoginResp.setToken(token.toString());
+        redisTemplate.opsForValue().set(token.toString(), JSONObject.toJSONString(userLoginResp), 3600*24, TimeUnit.SECONDS);
         resp.setContent(userLoginResp);
         return resp;
     }
 
     @GetMapping("/logout/{token}")
-    public CommonResp logout(@PathVariable Long token) {
+    public CommonResp logout(@PathVariable String token) {
         CommonResp resp= new CommonResp<>();
         redisTemplate.delete(token);
         LOG.info("从redis中删除token: {}", token);

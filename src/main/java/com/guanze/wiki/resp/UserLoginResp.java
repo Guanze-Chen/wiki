@@ -7,25 +7,16 @@
 
     private String name;
 
-    private Long token;
+    private String token;
 
-     public Long getToken() {
+     public String getToken() {
          return token;
      }
 
-     @Override
-     public String toString() {
-         return "UserLoginResp{" +
-                 "id=" + id +
-                 ", loginName='" + loginName + '\'' +
-                 ", name='" + name + '\'' +
-                 ", token=" + token +
-                 '}';
-     }
-
-     public void setToken(Long token) {
+     public void setToken(String token) {
          this.token = token;
      }
+
 
      public Long getId() {
         return id;
@@ -51,4 +42,14 @@
         this.name = name;
     }
 
+
+     @Override
+     public String toString() {
+         return "UserLoginResp{" +
+                 "id=" + id +
+                 ", loginName='" + loginName + '\'' +
+                 ", name='" + name + '\'' +
+                 ", token='" + token + '\'' +
+                 '}';
+     }
  }
