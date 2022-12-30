@@ -27,16 +27,16 @@
       <a-menu-item key="1">
         <router-link to="/">首页</router-link>
       </a-menu-item>
-      <a-menu-item key="2">
+      <a-menu-item key="2" v-if="user.id">
         <router-link to="/ebook">电子书管理</router-link>
       </a-menu-item>
-      <a-menu-item key="3">
+      <a-menu-item key="3" v-if="user.id">
         <router-link to="/category">分类管理</router-link>
       </a-menu-item>
-      <a-menu-item key="2">
+      <a-menu-item key="2" v-if="user.id">
         <router-link to="/user">用户管理</router-link>
       </a-menu-item>
-      <a-menu-item key="4">
+      <a-menu-item key="/about">
         <router-link to="/about">关于本站</router-link>
       </a-menu-item>
     </a-menu>
