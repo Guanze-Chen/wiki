@@ -18,6 +18,7 @@ import com.guanze.wiki.utils.CopyUtil;
 import com.guanze.wiki.utils.RedisUtil;
 import com.guanze.wiki.utils.RequestContext;
 import com.guanze.wiki.utils.SnowFlake;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -149,7 +150,8 @@ public class DocService {
 
         // 推送消息
         Doc docDb = docMapper.selectByPrimaryKey(id);
-        webSocketService.sendInfo("【"+docDb.getName() + "】被点赞!");
+        String logId = MDC.get("LOG_ID");
+        webSocketService.sendInfo("【"+docDb.getName() + "】被点赞!", logId);
     }
 
     public void updateEbookInfo() {
