@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import store from "@/store";
 import {Tool} from "@/utils/tool";
+import {message} from "ant-design-vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -86,6 +87,7 @@ router.beforeEach((to, from, next) => {
     const loginUser = store.state.user;
     if (Tool.isEmpty(loginUser)) {
       console.log("用户未登录！");
+      message.error('请登录！');
       next('/');
     } else {
       next();
