@@ -33,10 +33,18 @@
         <template #renderItem="{ item }">
           <a-list-item key="item.name">
             <template #actions>
-          <span v-for="{ type, text } in actions" :key="type">
-            <component :is="type" style="margin-right: 8px" />
-            {{ text }}
-          </span>
+               <span>
+                <component :is="FileOutlined" style="margin-right: 8px" />
+                {{ item.docCount }}
+               </span>
+              <span>
+                <component :is="UserOutlined" style="margin-right: 8px" />
+                {{ item.viewCount }}
+               </span>
+              <span>
+                <component :is="LikeOutlined" style="margin-right: 8px" />
+                {{ item.voteCount }}
+              </span>
             </template>
             <a-list-item-meta :description="item.description">
               <template #title>
@@ -56,7 +64,7 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue';
-import { BookFilled, LinkOutlined, PaperClipOutlined, StarOutlined, LikeOutlined, MessageOutlined } from '@ant-design/icons-vue';
+import { BookFilled, LinkOutlined, PaperClipOutlined, UserOutlined, LikeOutlined, FileOutlined } from '@ant-design/icons-vue';
 import axios from 'axios';
 import {message} from "ant-design-vue";
 import {Tool} from "@/utils/tool";
@@ -64,21 +72,17 @@ import {Tool} from "@/utils/tool";
 
 export default defineComponent({
   name: 'HomeView',
+  methods: {LikeOutlined, FileOutlined, UserOutlined},
   components: {
     BookFilled,
     LinkOutlined,
     PaperClipOutlined,
-    StarOutlined,
+    UserOutlined,
     LikeOutlined,
-    MessageOutlined
+    FileOutlined
   },
   setup() {
 
-    const actions: Record<string, string>[] = [
-      { type: 'StarOutlined', text: '156' },
-      { type: 'LikeOutlined', text: '156' },
-      { type: 'MessageOutlined', text: '2' },
-    ];
     const ebooks = ref("")
     const pagination = ref({
       current:1,
@@ -152,7 +156,6 @@ export default defineComponent({
 
     return {
       ebooks,
-      actions,
       pagination,
 
       handleClick,
