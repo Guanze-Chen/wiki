@@ -20,6 +20,7 @@ import com.guanze.wiki.utils.RequestContext;
 import com.guanze.wiki.utils.SnowFlake;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
@@ -90,6 +91,7 @@ public class DocService {
         return respList;
     }
 
+    @Transactional
     public void save(DocSaveReq req) {
         Doc doc =CopyUtil.copy(req, Doc.class);
         Content content = CopyUtil.copy(req, Content.class);
