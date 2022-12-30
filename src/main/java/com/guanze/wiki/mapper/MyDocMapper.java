@@ -7,4 +7,6 @@ public interface MyDocMapper {
     public void autoIncreViewCount(@Param("id") Long id);
 
     public void autoIncreVoteCount(@Param("id") Long id);
+
+    public void updateEbookInfo();
 }
