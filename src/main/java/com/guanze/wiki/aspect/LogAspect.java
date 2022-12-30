@@ -3,17 +3,20 @@ package com.guanze.wiki.aspect;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.support.spring.PropertyPreFilters;
 import com.guanze.wiki.utils.RequestContext;
+import com.guanze.wiki.utils.SnowFlake;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -23,6 +26,9 @@ import javax.servlet.http.HttpServletRequest;
 public class LogAspect {
 
     private final static Logger LOG = LoggerFactory.getLogger(LogAspect.class);
+
+    @Resource
+    private SnowFlake snowFlake;
 
     /** 定义一个切点 */
     @Pointcut("execution(public * com.guanze.*.controller..*Controller.*(..))")
@@ -36,6 +42,8 @@ public class LogAspect {
         HttpServletRequest request = attributes.getRequest();
         Signature signature = joinPoint.getSignature();
         String name = signature.getName();
+
+        MDC.put("LOG_ID", String.valueOf(snowFlake.nextId()));
 
         // 打印请求信息
         LOG.info("------------- 开始 -------------");
