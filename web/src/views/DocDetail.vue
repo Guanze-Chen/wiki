@@ -112,6 +112,7 @@ export default defineComponent({
       if (Tool.isNotEmpty(selectedKeys)) {
         // 选中某一节点时，加载该节点的文档信息
         doc.value = info.selectedNodes[0];
+        // 原文档是info.selectedNodes[0].props 这个是undefined 不要加props
         // 加载内容
         handleQueryContent(selectedKeys[0]);
       }
