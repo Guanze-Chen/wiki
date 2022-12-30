@@ -55,8 +55,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, reactive, toRef } from 'vue';
-import { BookFilled, LinkOutlined, PaperClipOutlined } from '@ant-design/icons-vue';
+import { defineComponent, onMounted, ref } from 'vue';
+import { BookFilled, LinkOutlined, PaperClipOutlined, StarOutlined, LikeOutlined, MessageOutlined } from '@ant-design/icons-vue';
 import axios from 'axios';
 import {message} from "ant-design-vue";
 import {Tool} from "@/utils/tool";
@@ -67,7 +67,10 @@ export default defineComponent({
   components: {
     BookFilled,
     LinkOutlined,
-    PaperClipOutlined
+    PaperClipOutlined,
+    StarOutlined,
+    LikeOutlined,
+    MessageOutlined
   },
   setup() {
 

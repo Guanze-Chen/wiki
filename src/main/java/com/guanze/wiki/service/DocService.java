@@ -7,6 +7,7 @@ import com.guanze.wiki.domain.Doc;
 import com.guanze.wiki.domain.DocExample;
 import com.guanze.wiki.mapper.ContentMapper;
 import com.guanze.wiki.mapper.DocMapper;
+import com.guanze.wiki.mapper.MyDocMapper;
 import com.guanze.wiki.req.DocQueryReq;
 import com.guanze.wiki.req.DocSaveReq;
 import com.guanze.wiki.resp.DocQueryResp;
@@ -26,6 +27,9 @@ public class DocService {
     @Resource
     private DocMapper docMapper;
 
+
+    @Resource
+    private MyDocMapper myDocMapper;
     @Resource
     private ContentMapper contentMapper;
 
@@ -82,6 +86,8 @@ public class DocService {
         if (ObjectUtils.isEmpty(req.getId())) {
             //
             doc.setId(snowFlake.nextId());
+            doc.setViewCount(0);
+            doc.setVoteCount(0);
             docMapper.insert(doc);
 
             content.setId(doc.getId());
@@ -114,6 +120,8 @@ public class DocService {
     public String findContent(Long id) {
 
         Content content = contentMapper.selectByPrimaryKey(id);
+        // # 文档阅读数+1
+        myDocMapper.autoIncreViewCount(id);
         if (ObjectUtils.isEmpty(content)) {
             return "";
         } else {
