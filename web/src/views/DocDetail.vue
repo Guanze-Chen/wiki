@@ -24,6 +24,11 @@
             <a-divider style="height: 2px;background-color:#9999cc" />
           </div>
           <div class="wangeditor" :innerHTML="html"></div>
+          <div class="vote-div">
+            <a-button type="primary" shape="round" @click="vote" size="middle">
+               <span><like-outlined />&nbsp;点赞: {{doc.voteCount}}</span>
+            </a-button>
+          </div>
         </a-col>
       </a-row>
     </a-layout-content>
@@ -32,7 +37,7 @@
 
 <script lang="ts">
 import {createVNode, defineComponent, onMounted, ref} from 'vue';
-import { SearchOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
+import { SearchOutlined, ExclamationCircleOutlined, LikeOutlined } from '@ant-design/icons-vue';
 import { message } from "ant-design-vue";
 import axios from 'axios';
 import {Tool} from "@/utils/tool";
@@ -47,6 +52,7 @@ export default defineComponent({
   components: {
     SearchOutlined,
     ExclamationCircleOutlined,
+    LikeOutlined,
   },
   setup() {
     const route = useRoute();
@@ -155,6 +161,20 @@ export default defineComponent({
       }
     }
 
+    //点赞
+
+    const vote = () => {
+      axios.get('/doc/vote/' + doc.value.id)
+          .then((res) => {
+            const data = res.data;
+            if(data.success) {
+              doc.value.voteCount++ ;
+            } else {
+              message.error(data.message)
+            }
+          })
+    }
+
 
 
 
@@ -172,6 +192,7 @@ export default defineComponent({
       defaultSelectedKeys,
 
       doc,
+      vote,
     }
 
 
@@ -235,6 +256,11 @@ export default defineComponent({
   margin: 20px 10px !important;
   font-size: 16px !important;
   font-weight:600;
+}
+
+.vote-div {
+  text-align: center;
+  padding: 16px;
 }
 
 </style>
