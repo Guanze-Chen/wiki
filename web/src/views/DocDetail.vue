@@ -154,7 +154,7 @@ export default defineComponent({
       console.log('selected', selectedKeys, info);
       if(Tool.isNotEmpty(selectedKeys)) {
         // 选中某一个节点时候，加载该文档的节点信息
-        doc.value = info.selectedNodes[0].props;
+        // doc.value = info.selectedNodes[0].props;
         //加载内容
         handleQueryContent(selectedKeys[0]);
 

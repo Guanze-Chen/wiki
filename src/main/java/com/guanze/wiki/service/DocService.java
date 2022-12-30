@@ -5,6 +5,8 @@ import com.github.pagehelper.PageInfo;
 import com.guanze.wiki.domain.Content;
 import com.guanze.wiki.domain.Doc;
 import com.guanze.wiki.domain.DocExample;
+import com.guanze.wiki.exception.BusinessException;
+import com.guanze.wiki.exception.BusinessExceptionCode;
 import com.guanze.wiki.mapper.ContentMapper;
 import com.guanze.wiki.mapper.DocMapper;
 import com.guanze.wiki.mapper.MyDocMapper;
@@ -13,6 +15,8 @@ import com.guanze.wiki.req.DocSaveReq;
 import com.guanze.wiki.resp.DocQueryResp;
 import com.guanze.wiki.resp.PageResp;
 import com.guanze.wiki.utils.CopyUtil;
+import com.guanze.wiki.utils.RedisUtil;
+import com.guanze.wiki.utils.RequestContext;
 import com.guanze.wiki.utils.SnowFlake;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -27,6 +31,8 @@ public class DocService {
     @Resource
     private DocMapper docMapper;
 
+    @Resource
+    public RedisUtil redisUtil;
 
     @Resource
     private MyDocMapper myDocMapper;
@@ -131,6 +137,10 @@ public class DocService {
 
     //点赞
     public void vote(Long id) {
-        myDocMapper.autoIncreVoteCount(id);
+        String ip = RequestContext.getRemoteAddr();
+        if (redisUtil.validateRepeat("DOC_VOTE" + id + "_" + ip, 3600*24*7)) {
+            myDocMapper.autoIncreVoteCount(id);
+        } else
+            throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT);
     }
 }
