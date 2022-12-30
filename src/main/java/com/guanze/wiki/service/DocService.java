@@ -18,6 +18,7 @@ import com.guanze.wiki.utils.CopyUtil;
 import com.guanze.wiki.utils.RedisUtil;
 import com.guanze.wiki.utils.RequestContext;
 import com.guanze.wiki.utils.SnowFlake;
+import com.guanze.wiki.websocket.WebSocketServer;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -42,13 +43,17 @@ public class DocService {
     @Resource
     private SnowFlake snowFlake;
 
+    @Resource
+    private WebSocketServer webSocketServer;
+
+
     public PageResp<DocQueryResp> list(DocQueryReq req) {
         DocExample docExample = new DocExample();
         docExample.setOrderByClause("sort asc");
         DocExample.Criteria criteria = docExample.createCriteria();
-        if (!ObjectUtils.isEmpty(req.getName())) {
-            criteria.andNameLike("%" + req.getName() + "%");
-        }
+//        if (!ObjectUtils.isEmpty(req.getName())) {
+//            criteria.andNameLike("%" + req.getName() + "%");
+//        }
         PageHelper.startPage(req.getPage(), req.getSize());
         List<Doc> docList = docMapper.selectByExample(docExample);
 
@@ -140,8 +145,14 @@ public class DocService {
         String ip = RequestContext.getRemoteAddr();
         if (redisUtil.validateRepeat("DOC_VOTE" + id + "_" + ip, 3600*24*7)) {
             myDocMapper.autoIncreVoteCount(id);
-        } else
+        } else {
             throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT);
+        }
+
+        // 推送消息
+        Doc docDb = docMapper.selectByPrimaryKey(id);
+        webSocketServer.sendInfo("【"+docDb.getName() + "】被点赞!");
+
     }
 
     public void updateEbookInfo() {

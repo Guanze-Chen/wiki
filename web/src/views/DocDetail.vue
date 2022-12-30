@@ -1,7 +1,7 @@
 <template>
   <a-layout>
     <a-layout-content :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }">
-      <h3 v-if="level1.length === 0">对不起，相关文档还在收集中！</h3>
+      <h3 v-if="level1.length === 0">对不起，找不到相关文档！</h3>
       <a-row>
         <a-col :span="6">
           <a-tree
@@ -18,15 +18,15 @@
           <div>
             <h2>{{doc.name}}</h2>
             <div>
-              <span>阅读数: {{doc.viewCount}}</span> &nbsp;&nbsp;
-              <span>点赞数: {{doc.voteCount}}</span>
+              <span>阅读数：{{doc.viewCount}}</span> &nbsp; &nbsp;
+              <span>点赞数：{{doc.voteCount}}</span>
             </div>
-            <a-divider style="height: 2px;background-color:#9999cc" />
+            <a-divider style="height: 2px; background-color: #9999cc"/>
           </div>
           <div class="wangeditor" :innerHTML="html"></div>
           <div class="vote-div">
-            <a-button type="primary" shape="round" @click="vote" size="middle">
-               <span><like-outlined />&nbsp;点赞: {{doc.voteCount}}</span>
+            <a-button type="primary" shape="round" :size="'large'" @click="vote">
+              <template #icon><LikeOutlined /> &nbsp;点赞：{{doc.voteCount}} </template>
             </a-button>
           </div>
         </a-col>
@@ -36,37 +36,26 @@
 </template>
 
 <script lang="ts">
-import {createVNode, defineComponent, onMounted, ref} from 'vue';
-import { SearchOutlined, ExclamationCircleOutlined, LikeOutlined } from '@ant-design/icons-vue';
-import { message } from "ant-design-vue";
+import { defineComponent, onMounted, ref, createVNode } from 'vue';
 import axios from 'axios';
+import {message} from 'ant-design-vue';
 import {Tool} from "@/utils/tool";
 import {useRoute} from "vue-router";
 
-
-
-
-
 export default defineComponent({
-  name: 'DocDetail',
-  components: {
-    SearchOutlined,
-    ExclamationCircleOutlined,
-    LikeOutlined,
-  },
+  name: 'Doc',
   setup() {
     const route = useRoute();
     const docs = ref();
     const html = ref();
     const defaultSelectedKeys = ref();
     defaultSelectedKeys.value = [];
-
-    //当前选中的文档
+    // 当前选中的文档
     const doc = ref();
     doc.value = {};
 
     /**
-     * 一级分类树，children属性就是二级分类
+     * 一级文档树，children属性就是二级文档
      * [{
      *   id: "",
      *   name: "",
@@ -76,128 +65,82 @@ export default defineComponent({
      *   }]
      * }]
      */
-    const level1 = ref(); // 一级分类树，children属性就是二级分类
+    const level1 = ref(); // 一级文档树，children属性就是二级文档
     level1.value = [];
 
+    /**
+     * 内容查询
+     **/
+    const handleQueryContent = (id: number) => {
+      axios.get("/doc/mediumtext/" + id).then((response) => {
+        const data = response.data;
+        if (data.success) {
+          html.value = data.content;
+        } else {
+          message.error(data.message);
+        }
+      });
+    };
 
-    const setDisable = (treeSelectData: any, id: any) => {
-      // console.log(treeSelectData, id);
-      // 遍历数组，即遍历某一层节点
-      for (let i = 0; i < treeSelectData.length; i++) {
-        const node = treeSelectData[i];
-        if (node.id === id) {
-          // 如果当前节点就是目标节点
-          console.log("disabled", node);
-          // 将目标节点设置为disabled
-          node.disabled = true;
+    /**
+     * 数据查询
+     **/
+    const handleQuery = () => {
+      axios.get("/doc/all/" + route.query.ebookId).then((response) => {
+        const data = response.data;
+        if (data.success) {
+          docs.value = data.content;
 
-          // 遍历所有子节点，将所有子节点全部都加上disabled
-          const children = node.children;
-          if (Tool.isNotEmpty(children)) {
-            for (let j = 0; j < children.length; j++) {
-              setDisable(children, children[j].id)
-            }
+          level1.value = [];
+          level1.value = Tool.array2Tree(docs.value, 0);
+
+          if (Tool.isNotEmpty(level1)) {
+            defaultSelectedKeys.value = [level1.value[0].id];
+            handleQueryContent(level1.value[0].id);
+            // 初始显示文档信息
+            doc.value = level1.value[0];
           }
         } else {
-          // 如果当前节点不是目标节点，则到其子节点再找找看。
-          const children = node.children;
-          if (Tool.isNotEmpty(children)) {
-            setDisable(children, id);
-          }
+          message.error(data.message);
         }
-      }
+      });
     };
-
-
-    const handleQueryContent = (id:number) => {
-
-      axios.get('/doc/mediumtext/' + id, {
-      })
-          .then((res) => {
-            const data = res.data;
-            if (data.success) {
-              html.value = data.content;
-
-            } else {
-              message.error(data.message);
-            }
-          })
-    };
-
-    const handleQuery = () => {
-
-      axios.get('/doc/all/' + route.query.ebookId, {
-      })
-          .then((res) => {
-            const data = res.data;
-            if (data.success) {
-              docs.value = data.content;
-
-              level1.value = [];
-              level1.value = Tool.array2Tree(docs.value, 0);
-
-              if (Tool.isNotEmpty(level1)) {
-                defaultSelectedKeys.value = [level1.value[0].id]; // 选中状态
-                handleQueryContent(level1.value[0].id); // 进行查询
-                // 初始显示文档信息
-                doc.value = level1.value[0];
-              }
-            } else {
-              message.error(data.message);
-            }
-          })
-    };
-
-
 
     const onSelect = (selectedKeys: any, info: any) => {
+      console.log("---- selection")
       console.log('selected', selectedKeys, info);
-      if(Tool.isNotEmpty(selectedKeys)) {
-        // 选中某一个节点时候，加载该文档的节点信息
-        // doc.value = info.selectedNodes[0].props;
-        //加载内容
+      if (Tool.isNotEmpty(selectedKeys)) {
+        // 选中某一节点时，加载该节点的文档信息
+        doc.value = info.selectedNodes[0];
+        // 加载内容
         handleQueryContent(selectedKeys[0]);
-
       }
-    }
+    };
 
-    //点赞
-
+    // 点赞
     const vote = () => {
-      axios.get('/doc/vote/' + doc.value.id)
-          .then((res) => {
-            const data = res.data;
-            if(data.success) {
-              doc.value.voteCount++ ;
-            } else {
-              message.error(data.message)
-            }
-          })
-    }
-
-
-
+      axios.get('/doc/vote/' + doc.value.id).then((response) => {
+        const data = response.data;
+        if (data.success) {
+          doc.value.voteCount++;
+        } else {
+          message.error(data.message);
+        }
+      });
+    };
 
     onMounted(() => {
       handleQuery();
-    })
+    });
 
     return {
-
-     level1,
-
+      level1,
       html,
       onSelect,
-
       defaultSelectedKeys,
-
       doc,
-      vote,
+      vote
     }
-
-
-
-
   }
 });
 </script>
@@ -258,9 +201,9 @@ export default defineComponent({
   font-weight:600;
 }
 
+/* 点赞 */
 .vote-div {
+  padding: 15px;
   text-align: center;
-  padding: 16px;
 }
-
 </style>
