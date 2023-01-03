@@ -25,7 +25,10 @@
           </div>
           <div class="wangeditor" :innerHTML="html"></div>
           <div class="vote-div">
-            <a-button type="primary" shape="round" :size="'large'" @click="vote">
+            <a-button v-show="user.id" type="primary" shape="round" :size="'large'" @click="vote">
+              <template #icon><LikeOutlined /> &nbsp;点赞：{{doc.voteCount}} </template>
+            </a-button>
+            <a-button v-show="!user.id" type="primary" shape="round" :size="'large'" @click="voteFail">
               <template #icon><LikeOutlined /> &nbsp;点赞：{{doc.voteCount}} </template>
             </a-button>
           </div>
@@ -36,15 +39,18 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, createVNode } from 'vue';
+import {computed, defineComponent, onMounted, ref} from 'vue';
 import axios from 'axios';
 import {message} from 'ant-design-vue';
 import {Tool} from "@/utils/tool";
 import {useRoute} from "vue-router";
+import store from "@/store";
 
 export default defineComponent({
   name: 'Doc',
   setup() {
+    const user = computed( () =>
+        store.state.user)
     const route = useRoute();
     const docs = ref();
     const html = ref();
@@ -122,6 +128,9 @@ export default defineComponent({
     const vote = () => {
       axios.get('/doc/vote/' + doc.value.id).then((response) => {
         const data = response.data;
+        console.log('---vote----')
+        console.log(data)
+        console.log('vote end')
         if (data.success) {
           doc.value.voteCount++;
         } else {
@@ -129,6 +138,10 @@ export default defineComponent({
         }
       });
     };
+
+    const voteFail = () => {
+      message.error("请登录后点赞");
+    }
 
     onMounted(() => {
       handleQuery();
@@ -140,7 +153,10 @@ export default defineComponent({
       onSelect,
       defaultSelectedKeys,
       doc,
-      vote
+      vote,
+
+      user,
+      voteFail,
     }
   }
 });
