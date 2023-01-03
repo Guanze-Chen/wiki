@@ -322,7 +322,6 @@ export default defineComponent({
         const node = treeSelectData[i];
         if (node.id === id) {
           // 如果当前节点就是目标节点
-          console.log("disabled", node);
           // 将目标节点设置为disabled
           node.disabled = true;
 

@@ -6,6 +6,7 @@ import Antd from 'ant-design-vue'
 import 'ant-design-vue/dist/antd.css'
 import axios from 'axios'
 import {Tool} from "@/utils/tool";
+import { message } from 'ant-design-vue';
 
 axios.defaults.baseURL = process.env.VUE_APP_SERVER
 
@@ -30,6 +31,15 @@ axios.interceptors.response.use(function (response) {
     return response;
 }, error => {
     console.log('返回错误：', error);
+    //处理401未登录
+    // const res = error.response;
+    // const status = res.status;
+    // if (status === 401) {
+    //     console.log("未登录,跳转首页");
+    //     store.commit("setUser", {});
+    //     message.error("未登录或登录超时");
+    //     router.push("/")
+    // }
     return Promise.reject(error);
 });
 
