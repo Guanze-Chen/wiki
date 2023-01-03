@@ -28,7 +28,7 @@
     <a-layout-content
         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
-      <div class="welcome" v-show="isShowWelcome">欢迎来到知识库</div>
+      <div class="welcome" v-show="isShowWelcome"><the-welcome/></div>
       <a-list v-show="!isShowWelcome" item-layout="vertical" size="large" :pagination="pagination" :grid="{gutter: 20, column: 3}" :data-source="ebooks">
         <template #renderItem="{ item }">
           <a-list-item key="item.name">
@@ -68,6 +68,7 @@ import { BookFilled, LinkOutlined, PaperClipOutlined, UserOutlined, LikeOutlined
 import axios from 'axios';
 import {message} from "ant-design-vue";
 import {Tool} from "@/utils/tool";
+import TheWelcome from "@/components/Welcome.vue"
 
 
 export default defineComponent({
@@ -79,7 +80,8 @@ export default defineComponent({
     PaperClipOutlined,
     UserOutlined,
     LikeOutlined,
-    FileOutlined
+    FileOutlined,
+    TheWelcome,
   },
   setup() {
 
